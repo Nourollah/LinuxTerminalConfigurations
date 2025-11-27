@@ -52,6 +52,12 @@ if ! lsd; then
     # Retrying to install colorls with ruby package manager
     sudo gem install colorls;
   fi
+elif ! mcdu; then
+  if ! sudo apt install mcdu -y; then
+    echo "mcdu is not available!";
+elif ! bat; then
+  if ! sudo apt install bat -y; then
+    echo "bat is not available!";
 else
   # Set alias and export to user zsh default
   echo "source $(dirname $(gem which colorls))/tab_complete.sh" >> $HOME/.zshrc
@@ -59,6 +65,7 @@ else
   echo "alias tree='lsd --tree'" >> $HOME/.zshrc
   echo "alias treed='lsd --tree --depth'" >> $HOME/.zshrc
   echo 'alias lsdu="du -a -h --max-depth=1 | sort -hr"' >> $HOME/.zshrc
+  echo 'alias du="ncdu"' >> $HOME/.zshrc
   echo "alias vim='lvim'" >> $HOME/.zshrc
 fi
 
