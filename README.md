@@ -7,8 +7,8 @@ This repository provides bootstrap scripts to quickly configure a Linux command\
 ### Basic installation ways
 | Method | Command |
 |:--|:--|
-| curl | `sh -c "$(curl -fsSL https://raw.githubusercontent.com/Nourollah/linux-cli-config-zsh-vim/main/AutoConfigure.sh)"` |
-| wget | `sh -c "$(wget -O- https://raw.githubusercontent.com/Nourollah/linux-cli-config-zsh-vim/main/AutoConfigure.sh)"` |
+| curl \(Bash \+ oh\-my\-bash\) | `bash -c "$(curl -fsSL https://raw.githubusercontent.com/Nourollah/linux-cli-config-zsh-vim/main/BASH-OMB.sh)"` |
+| wget \(Bash \+ oh\-my\-bash\) | `bash -c "$(wget -qO- https://raw.githubusercontent.com/Nourollah/linux-cli-config-zsh-vim/main/BASH-OMB.sh)"` |
 
 ## What the scripts do (high level)
 

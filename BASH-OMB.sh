@@ -276,6 +276,11 @@ install_oh_my_bash() {
   info "Installing oh-my-bash..."
   bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" || true
   ok "oh-my-bash install finished."
+
+  # Ensure login shells load ~/.bashrc (so OSH_THEME in ~/.bashrc takes effect)
+  if [ -f "$HOME/.bash_profile" ] && ! grep -qE '(^|\s)\. ~/.bashrc(\s|$)|(^|\s)source ~/.bashrc(\s|$)' "$HOME/.bash_profile"; then
+    printf '\n# Load ~/.bashrc\n[ -r "$HOME/.bashrc" ] && . "$HOME/.bashrc"\n' >> "$HOME/.bash_profile"
+  fi
 }
 
 install_pixi() {
