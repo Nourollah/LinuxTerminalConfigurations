@@ -97,9 +97,11 @@ fi
 EOF
 
   ensure_file_exists "$BASHRC_FILE"
+  # Remove previously written absolute loader path so HOME stays portable across servers.
+  sed -i -E '/^[[:space:]]*\.[[:space:]]+"\/[^"]+\/\.bashrc\.d\/00-load-bashrc-d\.sh"[[:space:]]*$/d' "$BASHRC_FILE"
   append_line_once "" "$BASHRC_FILE"
   append_line_once "# Load bashrc snippets" "$BASHRC_FILE"
-  append_line_once ". \"$HOME/.bashrc.d/00-load-bashrc-d.sh\"" "$BASHRC_FILE"
+  append_line_once '. "$HOME/.bashrc.d/00-load-bashrc-d.sh"' "$BASHRC_FILE"
 }
 
 set_omb_theme_powerline() {
