@@ -114,7 +114,17 @@ install_optional_packages_tolerant() {
         err "apt-get not found; skipping optional packages."
         return 1
       fi
-      info "Detected Debian-like OS. Installing optional packages with apt..."
+      info "Detected Debian-like OS. Setting up repos and installing optional packages with apt..."
+      # Add eza repo
+      sudo mkdir -p /etc/apt/keyrings
+      wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+      echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+      
+      # Add helix PPA (Ubuntu only, for Debian use official repo)
+      if command -v add-apt-repository >/dev/null; then
+        sudo add-apt-repository -y ppa:maveonair/helix-editor
+      fi
+
       sudo apt-get update -y
       for p in "${pkgs[@]}"; do
         if sudo apt-get install -y "$p"; then
@@ -129,7 +139,9 @@ install_optional_packages_tolerant() {
         err "dnf not found; skipping optional packages."
         return 1
       fi
-      info "Detected RHEL/Fedora-like OS. Installing optional packages with dnf..."
+      info "Detected RHEL/Fedora-like OS. Setting up repos and installing optional packages with dnf..."
+      # Enable zellij COPR repository
+      sudo dnf copr enable -y varlad/zellij || true
       for p in "${pkgs[@]}"; do
         if sudo dnf -y install "$p"; then
           installed+=( "$p" )
@@ -162,11 +174,18 @@ setup_optional_aliases() {
 
   cat > "$ALIASES_FILE" <<'EOF'
 # Optional aliases
-alias ls='lsd'
-alias tree='lsd --tree'
-alias treed='lsd --tree --depth'
+# Basic list with icons and group directories first
+alias ls="eza --icons --group-directories-first"
+
+# Full tree view with icons
+alias tree="eza --icons --tree"
+
+# Tree view with specific depth (eza uses --level instead of --depth)
+alias treed="eza --icons --tree --level"
 alias lsdu='du -a -h --max-depth=1 | sort -hr'
-alias du='ncdu'
+alias du='dust'
+alias top='btm'
+alias cd='z'
 alias grep='rg'
 
 # Helpful global aliases (Zsh)
@@ -285,8 +304,9 @@ ok "Plugins configured."
 
 # 4) Optional packages + aliases
 os_family="$(detect_os_family)"
-optional_pkgs_debian=( fzf ripgrep fd-find jq bat tmux btop lsd ncdu neovim curl git )
-optional_pkgs_rhel=( fzf ripgrep fd-find jq bat tmux btop lsd ncdu neovim curl git )
+os_family="$(detect_os_family)"
+optional_pkgs_debian=( eza helix ripgrep fd-find bat zoxide btm du-dust git-delta hyperfine jq tmux curl git zellij xh fzf neovim )
+optional_pkgs_rhel=( eza helix ripgrep fd-find bat zoxide bottom rust-dust git-delta hyperfine jq tmux curl git zellij xh fzf neovim )
 
 if prompt_yes_no "Install optional packages for detected OS (${os_family})?"; then
   if [ "$os_family" = "debian" ]; then
@@ -338,6 +358,27 @@ if prompt_yes_no "Install Pixi (via https://pixi.sh/install.sh)?"; then
   install_pixi
 else
   info "Skipping Pixi."
+fi
+
+if command -v pixi >/dev/null 2>&1; then
+  if prompt_yes_no "Install optional packages with Pixi?"; then
+    pixi global install zoxide ripgrep fd-find bat eza btm dust delta hyperfine xh sd helix zellij
+    # Add aliases to rc files
+    comment="# Pixi global packages aliases (not system packages)"
+    bashrc="$HOME/.bashrc"
+    zshrc="$HOME/.zshrc"
+    aliases="alias cd='z'"
+    if [ -f "$bashrc" ]; then
+      append_line_once "$comment" "$bashrc"
+      append_line_once "$aliases" "$bashrc"
+    fi
+    if [ -f "$zshrc" ]; then
+      append_line_once "$comment" "$zshrc"
+      append_line_once "$aliases" "$zshrc"
+    fi
+  else
+    info "Skipping Pixi optional packages."
+  fi
 fi
 
 if prompt_yes_no "Install UV (via https://astral.sh/uv/install.sh)?"; then

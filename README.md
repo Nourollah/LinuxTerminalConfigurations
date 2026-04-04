@@ -43,9 +43,16 @@ and you answer `yes`, it installs the following packages:
 | `jq` | JSON parser/formatter for CLI pipelines; extract/filter JSON fields from API responses and files. |
 | `bat` | `cat` replacement with syntax highlighting, line numbers, and Git integration. |
 | `tmux` | Terminal multiplexer for persistent, split, and multi-window shell sessions. |
-| `btop` | Interactive system monitor for CPU, memory, disk, network, and processes. |
-| `lsd` | Modern `ls` replacement with icons, colors, and tree view support. |
-| `ncdu` | Interactive disk usage analyzer to find large files/folders quickly. |
+| `btm` \(`bottom`\) | Interactive system monitor for CPU, memory, disk, network, and processes. |
+| `dust` \(`du-dust`\) | Interactive disk usage analyzer to find large files/folders quickly. |
+| `eza` | Modern `ls` replacement with icons, colors, and tree view support. |
+| `zoxide` | Smarter cd command that learns your habits. |
+| `git-delta` \(`delta`\) | Syntax-highlighting pager for git. |
+| `hyperfine` | Command-line benchmarking tool. |
+| `xh` | Friendly and fast tool for sending HTTP requests. |
+| `sd` | Intuitive find & replace CLI. |
+| `zellij` | Terminal workspace with batteries included. |
+| `helix` | A post-modern modal text editor. |
 | `neovim` | Modern Vim-based editor for terminal-centric editing and plugin workflows. |
 | `curl` | Command-line data transfer tool for HTTP/HTTPS and other protocols. |
 | `git` | Distributed version control system used for source control and repository operations. |
@@ -53,6 +60,8 @@ and you answer `yes`, it installs the following packages:
 ### Notes about package names/commands
 - The package list above reflects what the scripts install with `apt`/`dnf`.
 - On Debian-like systems, some commands can differ from package names \(for example `fd-find` may provide `fdfind`\).
+- `btm` is installed as `bottom` on RHEL/Fedora, `dust` as `du-dust` on Debian/Ubuntu and `rust-dust` on RHEL/Fedora, `delta` as `git-delta`.
+- `eza` and `helix` may require adding repos on Debian/Ubuntu systems.
 - `ZSH-P10k.sh` also requires `wget` to bootstrap oh-my-zsh installation.
 
 ## Notes
