@@ -315,6 +315,20 @@ install_uv() {
   ok "UV install finished."
 }
 
+prompt_setup_optional_shell_features() {
+  if prompt_yes_no "Set optional aliases in $BASHRC_FILE?"; then
+    setup_optional_aliases
+  else
+    info "Skipping optional aliases."
+  fi
+
+  if prompt_yes_no "Add optional Bash functions feature (functions file loaded from $BASHRC_FILE)?"; then
+    setup_functions_file
+  else
+    info "Skipping Bash functions feature."
+  fi
+}
+
 # -----------------------------
 # Main
 # -----------------------------
@@ -329,7 +343,7 @@ os_family="$(detect_os_family)"
 optional_pkgs_debian=( eza helix ripgrep fd-find bat zoxide btm du-dust git-delta hyperfine jq tmux curl git zellij xh fzf neovim )
 optional_pkgs_rhel=( eza helix ripgrep fd-find bat zoxide bottom rust-dust git-delta hyperfine jq tmux curl git zellij xh fzf neovim )
 
-if prompt_yes_no "Install optional packages for detected OS (${os_family})?"; then
+if prompt_yes_no "Is this a new-system install and do you want to install optional packages with the system package manager?"; then
   if [ "$os_family" = "debian" ]; then
     install_optional_packages_tolerant "$os_family" "${optional_pkgs_debian[@]}"
   elif [ "$os_family" = "rhel" ]; then
@@ -337,14 +351,29 @@ if prompt_yes_no "Install optional packages for detected OS (${os_family})?"; th
   else
     install_optional_packages_tolerant "$os_family"
   fi
-else
-  info "Skipping optional packages."
-fi
 
-if prompt_yes_no "Set optional aliases in $BASHRC_FILE?"; then
-  setup_optional_aliases
+  prompt_setup_optional_shell_features
 else
-  info "Skipping optional aliases."
+  if prompt_yes_no "Do you want to proceed with Pixi to install additional packages?"; then
+    if ! command -v pixi >/dev/null 2>&1; then
+      install_pixi
+    fi
+
+    if command -v pixi >/dev/null 2>&1; then
+      pixi global install zoxide ripgrep fd-find bat eza btm dust delta hyperfine xh sd helix zellij btop
+
+      if prompt_yes_no "Set optional aliases and functions for Pixi-installed packages?"; then
+        setup_optional_aliases
+        setup_functions_file
+      else
+        info "Skipping Pixi optional shell features."
+      fi
+    else
+      warn "Pixi is not available; skipping Pixi package installation."
+    fi
+  else
+    info "Skipping optional package installation. Only shell configuration will be adjusted."
+  fi
 fi
 
 if prompt_yes_no "Configure AstroNvim (requires Neovim)?"; then
@@ -362,39 +391,6 @@ if prompt_yes_no "Configure AstroNvim (requires Neovim)?"; then
 else
   info "Skipping AstroNvim. Installing Vim config instead."
   install_vimrc_amix
-fi
-
-if prompt_yes_no "Add optional Bash functions feature (functions file loaded from $BASHRC_FILE)?"; then
-  setup_functions_file
-else
-  info "Skipping Bash functions feature."
-fi
-
-if prompt_yes_no "Install Pixi (via https://pixi.sh/install.sh)?"; then
-  install_pixi
-else
-  info "Skipping Pixi."
-fi
-
-if command -v pixi >/dev/null 2>&1; then
-  if prompt_yes_no "Install optional packages with Pixi?"; then
-    pixi global install zoxide ripgrep fd-find bat eza btm dust delta hyperfine xh sd helix zellij
-    # Add aliases to rc files
-    comment="# Pixi global packages aliases (not system packages)"
-    bashrc="$HOME/.bashrc"
-    zshrc="$HOME/.zshrc"
-    aliases="alias cd='z'"
-    if [ -f "$bashrc" ]; then
-      append_line_once "$comment" "$bashrc"
-      append_line_once "$aliases" "$bashrc"
-    fi
-    if [ -f "$zshrc" ]; then
-      append_line_once "$comment" "$zshrc"
-      append_line_once "$aliases" "$zshrc"
-    fi
-  else
-    info "Skipping Pixi optional packages."
-  fi
 fi
 
 if prompt_yes_no "Install UV (via https://astral.sh/uv/install.sh)?"; then

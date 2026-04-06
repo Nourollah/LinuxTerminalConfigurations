@@ -64,6 +64,31 @@ and you answer `yes`, it installs the following packages:
 - `eza` and `helix` may require adding repos on Debian/Ubuntu systems.
 - `ZSH-P10k.sh` also requires `wget` to bootstrap oh-my-zsh installation.
 
+## Optional Pixi packages
+When the script asks:
+- `Do you want to proceed with Pixi to install additional packages?`
+
+and you answer `yes`, it installs the following packages globally via Pixi:
+
+| Tool / Package | What it does |
+|:--|:--|
+| `zoxide` | Smarter `cd` with history and ranking. |
+| `ripgrep` | Fast text search tool (`rg`). |
+| `fd-find` | Fast `find` replacement. |
+| `bat` | Syntax-highlighting `cat` replacement. |
+| `eza` | Modern `ls` replacement. |
+| `btm` | Interactive terminal system monitor. |
+| `dust` | Fast disk usage analyzer. |
+| `delta` | Improved git diff pager. |
+| `hyperfine` | Benchmarking tool for CLI commands. |
+| `xh` | Friendly HTTP client. |
+| `sd` | Intuitive search-and-replace CLI. |
+| `helix` | Modern modal text editor. |
+| `zellij` | Terminal workspace manager. |
+| `btop` | Terminal-based resource monitor. |
+
+If Pixi package installation is selected, the script can also add package-specific shell aliases and functions to the shell config.
+
 ## Notes
 - These scripts may modify your shell startup files (for example `~/.bashrc` or `~/.zshrc`) and may install packages using `sudo`.
 - Restart the terminal session after running, or reload your shell config.
